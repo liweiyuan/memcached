@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       default-lazy-init="true">
+
+
+    <context:component-scan base-package="com.tingyun"></context:component-scan>
+    <mvc:annotation-driven/>
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean class="com.whalin.MemCached.SockIOPool"
+          factory-method="getInstance" init-method="initialize" destroy-method="shutDown" lazy-init="false">
+        <constructor-arg>
+            <value>memcachedPool</value>
+        </constructor-arg>
+        <property name="servers">
+            <list>
+                <value>${memcache.server}</value>
+            </list>
+        </property>
+        <property name="initConn" value="${memcache.initConn}" />
+        <property name="minConn" value="${memcache.minConn}" />
+        <property name="maxConn" value="${memcache.maxConn}" />
+        <property name="maxIdle" value="${memcache.maxIdle}" />
+        <property name="maintSleep" value="${memcache.maintSleep}" />
+        <property name="nagle" value="false" />
+        <property name="socketTO" value="${memcache.socketTO}" />
+        <property name="socketConnectTO" value="${memcache.socketConnectTO}"/>
+    </bean>
+
+    <bean class="com.whalin.MemCached.MemCachedClient">
+        <constructor-arg>
+            <value>memcachedPool</value>
+        </constructor-arg>
+    </bean>
+    <!--<bean id="memCachedPool" lazy-init="false"></bean>-->
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
